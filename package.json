@@ -1,0 +1,27 @@
+{
+  "name": "vite-project",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@cesium/engine": "^17.0.0",
+    "@element-plus/icons-vue": "^2.3.1",
+    "cesium": "^1.129.0",
+    "element-plus": "^2.9.10",
+    "pinia": "^3.0.2",
+    "vite-plugin-cesium": "^1.2.23",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.19",
+    "@vitejs/plugin-vue": "^5.2.3",
+    "prettier": "^3.5.3",
+    "sass": "^1.89.0",
+    "vite": "^6.3.5"
+  }
+}
