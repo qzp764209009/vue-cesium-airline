@@ -10,7 +10,7 @@ export const useMapStore = defineStore('map', () => {
   // 航点点位数组
   const entitiesPointOption = ref([])
   // 当前选中航点信息
-  const currPointInfo = ref([])
+  const currPointInfo = ref()
   const setOperateType = (val) => {
     if (operateType.value && operateType.value === val) {
       operateType.value = ''

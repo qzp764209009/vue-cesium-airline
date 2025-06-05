@@ -25,6 +25,7 @@
   import { ref, watch } from 'vue'
   import { useMapStore } from '@/stores/map'
   import { storeToRefs } from 'pinia'
+  import { debounce } from '@/utils/tool'
 
   const mapStore = useMapStore()
 
@@ -33,11 +34,10 @@
   const { entitiesPointOption, currPointInfo, cesiumManagerInfo } = storeToRefs(mapStore)
   const { setCurrPointInfo } = mapStore
   // 选中航点
-  const selectPoint = (item) => {
+  const selectPoint = debounce((item) => {
     setCurrPointInfo(item)
     cesiumManagerInfo.value.addFrustum(item.pointInfo)
-    console.log(cesiumManagerInfo.value, item, 'currPointInfo')
-  }
+  }, 500)
 
   watch(
     () => entitiesPointOption.value,

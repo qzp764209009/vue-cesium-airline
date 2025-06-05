@@ -4,12 +4,13 @@
       <div
         class="icon"
         :class="
-          operateTypeActive.includes(operateType) && operateType === operateTypeProps && 'active'
+          operateTypeActive.includes(operateTypeProps) &&
+          operateType === operateTypeProps &&
+          'active'
         "
-        @click="setOperateType(operateTypeProps)"
+        @click="handleClick"
       >
         <slot></slot>
-        <!-- <el-icon><TrendCharts /></el-icon> -->
       </div>
     </el-tooltip>
   </div>
@@ -18,6 +19,8 @@
 <script setup>
   import { useMapStore } from '@/stores/map'
   import { storeToRefs } from 'pinia'
+
+  const emit = defineEmits(['handleClick'])
 
   const props = defineProps({
     content: {
@@ -37,7 +40,10 @@
 
   // 直接解构会失去响应性，使用 storeToRefs
   const { operateType } = storeToRefs(mapStore)
-  const { setOperateType } = mapStore
+
+  const handleClick = () => {
+    emit('handleClick', props.operateTypeProps)
+  }
 </script>
 
 <style scoped lang="scss">
