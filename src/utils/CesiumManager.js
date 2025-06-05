@@ -63,7 +63,6 @@ class CesiumManager {
   init(container, options = {}) {
     if (this._initPromise) return this._initPromise
     const { VITE_CESIUM_TOKEN, VITE_CESIUM_WEB_KEY } = import.meta.env
-    console.log(VITE_CESIUM_TOKEN, VITE_CESIUM_WEB_KEY, 'VITE_CESIUM_WEB_KEY')
 
     this._initPromise = new Promise((resolve) => {
       // 设置 Cesium Ion 令牌（从环境变量获取）
@@ -102,8 +101,6 @@ class CesiumManager {
         ...options,
       }
 
-      console.log(defaultOptions, 'defaultOptions')
-
       this.viewer = new Viewer(container, defaultOptions)
       this.viewer._cesiumWidget._creditContainer.style.display = 'none'; // 隐藏版权
       // this.viewer.navigationHelpButton.viewModel.showHelp = false; // 立即隐藏帮助面板
@@ -125,6 +122,15 @@ class CesiumManager {
     this.viewer.scene.backgroundColor = Color.SKYBLUE;
     return this._initPromise
   }
+  // 转化为真实点位经纬度
+  conversion(cartesian) {
+    const cartographic = Cartographic.fromCartesian(cartesian);
+    const pointInfo = {}
+    pointInfo.longitude = Math.toDegrees(cartographic.longitude); // 经度
+    pointInfo.latitude = Math.toDegrees(cartographic.latitude); // 纬度
+    pointInfo.height = cartographic.height; // 高度
+    return pointInfo
+  }
 
   // 初始化事件监听
   _initEventListeners() {
@@ -138,14 +144,10 @@ class CesiumManager {
       // 点击时获取经纬度
       let ray = this.viewer.camera.getPickRay(movement.position);
       let cartesian = this.viewer.scene.globe.pick(ray, this.viewer.scene);
-      let cartographic = Cartographic.fromCartesian(cartesian);
-      let longitude = Math.toDegrees(cartographic.longitude); // 经度
-      let latitude = Math.toDegrees(cartographic.latitude); // 纬度
-      let height = cartographic.height; // 高度
 
       this._pickedObject = pickedObject
       // 
-      this._clickPosition = { longitude, latitude, height }
+      this._clickPosition = this.conversion(cartesian)
 
       console.log('点击', movement)
 
@@ -195,6 +197,10 @@ class CesiumManager {
     const entity = this.viewer.entities.add(options)
     this.entities.push(entity)
     if (type === 'point') {
+      // 存一份真实点位经纬度高度信息
+      const pointInfo = this.conversion(options.position)
+      pointInfo.id = this.entitiesPointOptions.length + 1
+      options.pointInfo = pointInfo;
       this.entitiesPointOptions.push(options)
     }
     return entity
@@ -202,7 +208,7 @@ class CesiumManager {
   // 新增视锥体
   addFrustum(position, parmas = { heading: BASE_HEADING, pitch: BASE_PITCH, fov: BASE_FOV }) {
     const options = JSON.parse(JSON.stringify(parmas));
-    const { height } = Cartographic.fromCartesian(position);
+    const { height, longitude, latitude } = position;
 
     options.fov = calculateFov(options.fov);
     // 远截面的距离  视野终点
@@ -236,7 +242,7 @@ class CesiumManager {
     console.log(options, position, '更新视锥体-------options')
 
     this.currentPrimitivesCamera.setView({
-      destination: position,
+      destination: Cartesian3.fromDegrees(longitude, latitude, height),
       orientation: {
         heading: Math.toRadians(options.heading),
         pitch: Math.toRadians(options.pitch),

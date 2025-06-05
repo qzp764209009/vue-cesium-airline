@@ -1,20 +1,18 @@
 <template>
-  <div class="map-line-btn">
-    <el-tooltip effect="dark" content="鼠标添加航点" placement="left">
-      <div
-        class="icon"
-        :class="operateType === 'point' && 'active'"
-        @click="setOperateType('point')"
-      >
-        <el-icon><TrendCharts /></el-icon>
-      </div>
-    </el-tooltip>
+  <div class="line-btns">
+    <MapBtnBase content="鼠标添加航点" operateTypeProps="point">
+      <el-icon><TrendCharts /></el-icon>
+    </MapBtnBase>
+    <MapBtnBase content="飞行偏航角" operateTypeProps="heading">
+      <el-icon><Position /></el-icon>
+    </MapBtnBase>
   </div>
 </template>
 
 <script setup>
   import { useMapStore } from '@/stores/map'
   import { storeToRefs } from 'pinia'
+  import MapBtnBase from './mapBtnBase.vue'
 
   const mapStore = useMapStore()
 
@@ -24,32 +22,8 @@
 </script>
 
 <style scoped lang="scss">
-  .map-line-btn {
-    width: 40px;
-    height: auto;
-    padding: 10px 0;
-
-    .icon {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: rgba(0, 0, 0, 0.5);
-      border-radius: 4px;
-      color: white;
-      cursor: pointer;
-      font-size: 24px;
-
-      &:hover {
-        background: rgba(0, 0, 0, 0.9);
-      }
-    }
-    .active {
-      background-color: rgb(43, 133, 228);
-      &:hover {
-        background-color: rgb(43, 133, 228);
-      }
-    }
+  .line-btns {
+    display: flex;
+    flex-direction: column;
   }
 </style>
